@@ -21,8 +21,5 @@ let package = Package(
         .target(
             name: "lambda-swift-sls",
             dependencies: []),
-        .testTarget(
-            name: "lambda-swift-slsTests",
-            dependencies: ["lambda-swift-sls"]),
     ]
 )
