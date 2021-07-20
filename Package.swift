@@ -5,12 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "lambda-swift-sls",
-    products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(
-            name: "lambda-swift-sls",
-            targets: ["lambda-swift-sls"]),
-    ],
+    // products: [
+    //     // Products define the executables and libraries a package produces, and make them visible to other packages.
+    //     .library(
+    //         name: "lambda-swift-sls",
+    //         targets: ["lambda-swift-sls"]),
+    // ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
