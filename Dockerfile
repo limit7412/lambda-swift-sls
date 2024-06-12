@@ -1,4 +1,4 @@
-FROM swift:latest as build-image
+FROM swift:amazonlinux2 as build-image
 
 WORKDIR /work
 COPY ./ ./
