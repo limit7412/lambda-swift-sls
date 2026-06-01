@@ -1,38 +1,88 @@
 service: lambda-swift-sls
 
+plugins:
+  - serverless-plugin-scripts
+
 custom:
   defaultStage: dev
+  scripts:
+    hooks:
+      # sls deploy / sls package 時に bootstrap を静的ビルドする。
+      # macOS / Apple Silicon でも Lambda(provided.al2, x86_64) 互換の
+      # 静的バイナリを得るため、linux/amd64 を明示して Docker でビルドする。
+      # swift build の生成物 .build/release/LambdaSwiftServerless を
+      # パッケージ直下の bootstrap にコピーする。
+      'before:package:createDeploymentArtifacts': |
+        docker run --rm --platform linux/amd64 -v "$PWD":/work -w /work swift:amazonlinux2 \
+          sh -c "swift build -c release --static-swift-stdlib && cp .build/release/LambdaSwiftServerless bootstrap && chmod +x bootstrap"
 
 provider:
   name: aws
-  runtime: provided
+  runtime: provided.al2
   timeout: 20
   region: ap-northeast-1
-  ecr:
-    images:
-      appImage:
-        path: ./
-        platform: linux/amd64
   stage: ${opt:stage, self:custom.defaultStage}
   # environment:
   #   ${file(./env.yml)}
 
+  # =====================================================================
+  # Docker(ECR イメージ)版の provider 設定【旧構成・参考用にコメントアウト】
+  # ---------------------------------------------------------------------
+  # zip(provided.al2)版へ移行したため未使用。
+  # ---------------------------------------------------------------------
+  # runtime: provided
+  # ecr:
+  #   images:
+  #     appImage:
+  #       path: ./
+  #       platform: linux/amd64
+  # =====================================================================
+
+package:
+  patterns:
+    - '!./**'
+    - bootstrap
+
 functions:
+  # provided ランタイムはパッケージ直下の bootstrap を実行する。
+  # handler 文字列は _HANDLER として渡され、Main.swift の
+  # Serverless.Lambda.Handler(name: "...") と一致させることで処理を振り分ける。
   hello:
-    image:
-      name: appImage
-      command:
-        - hello
+    handler: hello
     events:
       - http:
           path: test
           method: get
   world:
-    image:
-      name: appImage
-      command:
-        - world
+    handler: world
     events:
       - http:
           path: test
           method: post
+
+# =====================================================================
+# Docker(ECR イメージ)版の functions 設定【旧構成・参考用にコメントアウト】
+# ---------------------------------------------------------------------
+# zip(provided.al2)版へ移行したため未使用。
+# zip 版では handler 文字列を _HANDLER として渡して処理を振り分ける。
+# ---------------------------------------------------------------------
+# functions:
+#   hello:
+#     image:
+#       name: appImage
+#       command:
+#         - hello
+#     events:
+#       - http:
+#           path: test
+#           method: get
+#   world:
+#     image:
+#       name: appImage
+#       command:
+#         - world
+#     events:
+#       - http:
+#           path: test
+#           method: post
+# =====================================================================
