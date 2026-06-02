@@ -8,7 +8,7 @@ custom:
   scripts:
     hooks:
       # sls deploy / sls package 時に bootstrap を静的ビルドする。
-      # macOS / Apple Silicon でも Lambda(provided.al2, x86_64) 互換の
+      # macOS / Apple Silicon でも Lambda(provided.al2023, x86_64) 互換の
       # 静的バイナリを得るため、linux/amd64 を明示して Docker でビルドする。
       # swift build の生成物 .build/release/LambdaSwiftServerless を
       # パッケージ直下の bootstrap にコピーする。
@@ -18,7 +18,7 @@ custom:
 
 provider:
   name: aws
-  runtime: provided.al2
+  runtime: provided.al2023
   timeout: 20
   region: ap-northeast-1
   stage: ${opt:stage, self:custom.defaultStage}
@@ -28,7 +28,7 @@ provider:
   # =====================================================================
   # Docker(ECR イメージ)版の provider 設定【旧構成・参考用にコメントアウト】
   # ---------------------------------------------------------------------
-  # zip(provided.al2)版へ移行したため未使用。
+  # zip(provided.al2023)版へ移行したため未使用。
   # ---------------------------------------------------------------------
   # runtime: provided
   # ecr:
@@ -63,7 +63,7 @@ functions:
 # =====================================================================
 # Docker(ECR イメージ)版の functions 設定【旧構成・参考用にコメントアウト】
 # ---------------------------------------------------------------------
-# zip(provided.al2)版へ移行したため未使用。
+# zip(provided.al2023)版へ移行したため未使用。
 # zip 版では handler 文字列を _HANDLER として渡して処理を振り分ける。
 # ---------------------------------------------------------------------
 # functions:
